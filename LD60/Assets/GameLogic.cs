@@ -81,6 +81,11 @@ public class GameLogic : MonoBehaviour
 
     public void SetCampfire(int i, bool isOn)
     {
+        if(!isOn)
+        {
+            Screenshake.Intensity = 0.1f;
+        }
+
         campfireStates[i] = isOn;
         UpdateCampfires();
     }

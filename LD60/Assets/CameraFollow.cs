@@ -7,6 +7,7 @@ public class CameraFollow : MonoBehaviour
     public Vector3 offset;
     public float speedOffsetMultiplier;
     public float minCameraSize;
+    public float maxCameraSize;
     public float cameraSizeMultiplier;
     public float cameraSizeChangeSpeedUp;
     public float cameraSizeChangeSpeedDown;
@@ -21,13 +22,12 @@ public class CameraFollow : MonoBehaviour
         mainCamera.orthographicSize = minCameraSize;
     }
 
-
     void Update()
     {
         transform.position = Player.Instance.transform.position + offset + Player.Instance.transform.forward * Player.Instance.GetCurrentSpeed() * speedOffsetMultiplier;
 
         cameraSizeTarget = Mathf.Abs(Player.Instance.GetCurrentSpeed()) * cameraSizeMultiplier;
-        cameraSizeTarget = Mathf.Max(cameraSizeTarget, minCameraSize);
+        cameraSizeTarget = Mathf.Clamp(cameraSizeTarget, minCameraSize, maxCameraSize);
 
         if(mainCamera.orthographicSize < cameraSizeTarget)
         {

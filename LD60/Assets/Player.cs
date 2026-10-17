@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -11,6 +12,7 @@ public class Player : MonoBehaviour
     public Transform[] wheels;
     public Transform turret;
     public Transform turretTip;
+    public Transform body;
 
     public float acceleration;
     public float drag;
@@ -24,17 +26,26 @@ public class Player : MonoBehaviour
     public float fireRate;
     public float fireBurstRate;
     public int fireBurstAmount;
+    public float prefireDistance;
     public float maxFireSpread;
+    public float turboTime;
+    public float turboSpeed;
+    public float turboFireDropRate;
+    public float turboTurnMultiplier;
+    public float turboTriggerDelay;
 
     float fireTimer;
     float currentSpeed;
     float currentTurnSpeed;
     Vector3 lastPosition;
     Vector3 velocity;
+    float turboTimer;
+    float turboFireDropTimer;
+    bool inTurbo;
+    float turboTriggerTimer;
+    int turboDrops;
 
     public IObjectPool<GameObject> firePool;
-
-    // TODO: Turboboost with space, drops fire
 
     public float GetCurrentSpeed()
     {
@@ -66,15 +77,20 @@ public class Player : MonoBehaviour
     void Update()
     {
         // Turn
+        bool turnRight = false;
+        bool turnLeft = false;
         float absSpeed = Mathf.Abs(currentSpeed);
         currentTurnSpeed = Mathf.Lerp(0, maxSpeed, absSpeed) / maxSpeed * turnSpeed;
+        if(inTurbo) currentTurnSpeed *= turboTurnMultiplier;
         if (Input.GetKey(KeyCode.RightArrow))
         {
             transform.Rotate(Vector3.up, currentTurnSpeed * Time.deltaTime, Space.Self);
+            turnRight = true;
         }
         else if (Input.GetKey(KeyCode.LeftArrow))
         {
             transform.Rotate(Vector3.up, -currentTurnSpeed * Time.deltaTime, Space.Self);
+            turnLeft = true;
         }
 
         // Accelerate
@@ -100,7 +116,47 @@ public class Player : MonoBehaviour
         }
         currentSpeed = Mathf.Clamp(currentSpeed, maxReverseSpeed, maxSpeed);
 
-        // Bounce back to level
+        // Turbo
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if(Time.time > turboTriggerTimer)
+            { 
+                turboTimer = turboTime;
+                turboTriggerTimer = Time.time + turboTriggerDelay;
+            }
+        }
+
+        inTurbo = turboTimer > 0.0f;
+        if(inTurbo)
+        {
+            turboTimer -= Time.deltaTime;
+            currentSpeed = turboSpeed;
+            inTurbo = true;
+
+            if (Time.time > turboFireDropTimer)
+            {
+                turboFireDropTimer = Time.time + turboFireDropRate * (1.0f + turboDrops / 10.0f);
+                DropFire();
+                turboDrops++;
+            }
+        }
+        else
+        {
+            turboDrops = 0;
+        }
+
+        // Animate body
+        float addToX = inTurbo ? -10.0f : 0.0f;
+        addToX += currentSpeed < 0.0f ? 5.0f : 0.0f;
+        Quaternion bodyTargetRotation = Quaternion.Euler(new Vector3(270.0f + addToX, 0.0f, 270.0f));
+        body.localRotation = Quaternion.Slerp(body.localRotation, bodyTargetRotation, Time.deltaTime * 5.0f);
+
+        float addToZ = turnRight ? -8.0f : 0.0f;
+        addToZ += turnLeft ? 8.0f : 0.0f;
+        Quaternion targetRotation = Quaternion.Euler(new Vector3(0.0f, transform.localEulerAngles.y, addToZ));
+        transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, Time.deltaTime * 10.0f);
+
+        // Move & Bounce back to level
         if(Vector3.Distance(Vector3.zero, transform.position) > moveMaxDistance)
         {
             Vector3 directioToCenter = (Vector3.zero - transform.position).normalized;
@@ -109,6 +165,11 @@ public class Player : MonoBehaviour
         else
         {
             transform.Translate(Vector3.forward * currentSpeed * Time.deltaTime, Space.Self);
+        }
+
+        if(!Mathf.Approximately(transform.localPosition.y, 0.0f))
+        {
+            transform.localPosition = new Vector3(transform.localPosition.x, 0.0f, transform.localPosition.z);
         }
 
         // Spin wheels
@@ -120,6 +181,7 @@ public class Player : MonoBehaviour
         // Turret lookat
         Transform closestTarget = null;
         float closestDistance = 99999.9f;
+        bool closestTargetIsEnemy = false;
         
         foreach(GameObject e in GameLogic.Instance.enemies)
         {
@@ -128,6 +190,7 @@ public class Player : MonoBehaviour
             {
                 closestDistance = distance;
                 closestTarget = e.transform;
+                closestTargetIsEnemy = true;
             }
         }
 
@@ -140,6 +203,7 @@ public class Player : MonoBehaviour
                 {
                     closestDistance = distance;
                     closestTarget = GameLogic.Instance.campfires[i].transform;
+                    closestTargetIsEnemy = false;
                 }
             }
         }
@@ -148,7 +212,12 @@ public class Player : MonoBehaviour
         {
             if (closestDistance < distanceToFire)
             {
-                turret.LookAt(closestTarget.position + Vector3.up * 1.0f, Vector3.up);
+                Vector3 target = closestTarget.position + Vector3.up * 1.0f;
+                if (closestTargetIsEnemy)
+                {
+                    target += closestTarget.forward * prefireDistance;
+                }
+                turret.LookAt(target, Vector3.up);
 
                 // Shooting
                 if (Time.time > fireTimer)
@@ -180,6 +249,13 @@ public class Player : MonoBehaviour
         spreadVector = transform.TransformVector(spreadVector);
 
         fire.transform.forward = (turretTip.forward + spreadVector).normalized;
+    }
+
+    public void DropFire()
+    {
+        GameObject fire = firePool.Get();
+        fire.transform.position = transform.position;
+        fire.transform.forward = -transform.forward;
     }
 
     IEnumerator FireBurst()

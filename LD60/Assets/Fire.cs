@@ -16,6 +16,7 @@ public class Fire : MonoBehaviour
         currentLifetime = lifetime;
         currentSpeed = speed;
         inheritedVelocity = Player.Instance.GetVelocity().normalized * Player.Instance.GetCurrentSpeed();
+        transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, scaleAnim.Evaluate(currentLifetime / lifetime));
     }
 
     void Update()
