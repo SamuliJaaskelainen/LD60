@@ -6,15 +6,13 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
-  
     public AnimationCurve anim;
     public float animMultipier;
     public float animSpeed;
     Vector3 startScale;
     float animTime;
     NavMeshAgent agent;
-
-    public static List<Enemy> enemies = new List<Enemy>();
+    int targetFire;
 
     void Awake()
     {
@@ -22,25 +20,42 @@ public class Enemy : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
     }
 
-    private void OnEnable()
+    void OnEnable()
     {
-        enemies.Add(this);
+        InitNewTarget();
     }
 
-    private void OnDisable()
+    void InitNewTarget()
     {
-        enemies.Remove(this);
+        targetFire = Random.Range(0, GameLogic.Instance.campFireAmount);
+        agent.SetDestination(GameLogic.Instance.campFires[targetFire].transform.position);
     }
 
     void Update()
     {
-        // Move
-        agent.SetDestination(Player.Instance.transform.position);
-
         // Animate
         float a = anim.Evaluate(animTime) * animMultipier;
         animTime += animSpeed * Time.deltaTime;
         if(animTime > 1.0f) animTime -= 1.0f;
         transform.localScale = new Vector3(startScale.x, startScale.y * a, startScale.z);
+
+        // Kill fire
+        if(Vector3.Distance(transform.position, agent.destination) < 0.5f)
+        {
+            if(GameLogic.Instance.GetCampfireState(targetFire))
+            {
+                GameLogic.Instance.SetCampfire(targetFire, false);
+                Die();
+            }
+            else
+            {
+                InitNewTarget();
+            }
+        }
+    }
+
+    public void Die(bool playAudio = false)
+    {
+        GameLogic.Instance.enemyPool.Release(gameObject);
     }
 }
