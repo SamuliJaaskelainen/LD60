@@ -13,13 +13,13 @@ public class GameLogic : MonoBehaviour
 
     public GameObject[] uiOn;
     public GameObject[] uiOff;
-    public List<GameObject> campFires;
+    public List<GameObject> campfires;
     public List<Transform> enemySpawners;
     public GameObject enemyPrefab;
     public float enemySpawnRate;
     float enemySpawnTimer;
 
-    bool[] campFireStates = new bool[3];
+    bool[] campfireStates = new bool[3];
 
     public IObjectPool<GameObject> enemyPool;
     public List<GameObject> enemies = new List<GameObject>();
@@ -27,13 +27,11 @@ public class GameLogic : MonoBehaviour
     void Awake()
     {
         Instance = this;
-    }
 
-    void Start()
-    {
-        for(int i = 0;  i < campFireStates.Length; i++)
+        for(int i = 0;  i < campfireStates.Length; i++)
         {
-            campFireStates[i] = true;
+            campfireStates[i] = true;
+            campfires[i].GetComponent<Campfire>().index = i;
         }
 
         UpdateCampfires();
@@ -62,12 +60,12 @@ public class GameLogic : MonoBehaviour
     void UpdateCampfires()
     {
         int deadCampfires = 0;
-        for (int i = 0; i < campFireStates.Length; i++)
+        for (int i = 0; i < campfireStates.Length; i++)
         {
-            if (campFireStates[i] == false) deadCampfires++;
-            campFires[i].transform.Find("Fire").gameObject.SetActive(campFireStates[i]);
-            uiOn[i].SetActive(campFireStates[i]);
-            uiOff[i].SetActive(!campFireStates[i]);
+            if (campfireStates[i] == false) deadCampfires++;
+            campfires[i].transform.Find("Fire").gameObject.SetActive(campfireStates[i]);
+            uiOn[i].SetActive(campfireStates[i]);
+            uiOff[i].SetActive(!campfireStates[i]);
         }
 
         if(deadCampfires == campFireAmount )
@@ -83,12 +81,12 @@ public class GameLogic : MonoBehaviour
 
     public void SetCampfire(int i, bool isOn)
     {
-        campFireStates[i] = isOn;
+        campfireStates[i] = isOn;
         UpdateCampfires();
     }
 
     public bool GetCampfireState(int i)
     {
-        return campFireStates[i];
+        return campfireStates[i];
     }
 }

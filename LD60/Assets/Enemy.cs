@@ -28,7 +28,7 @@ public class Enemy : MonoBehaviour
     void InitNewTarget()
     {
         targetFire = Random.Range(0, GameLogic.Instance.campFireAmount);
-        agent.SetDestination(GameLogic.Instance.campFires[targetFire].transform.position);
+        agent.SetDestination(GameLogic.Instance.campfires[targetFire].transform.position);
     }
 
     void Update()

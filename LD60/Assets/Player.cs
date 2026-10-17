@@ -135,11 +135,11 @@ public class Player : MonoBehaviour
         {
             if(GameLogic.Instance.GetCampfireState(i) == false)
             { 
-                float distance = Vector3.Distance(transform.position, GameLogic.Instance.campFires[i].transform.position);
+                float distance = Vector3.Distance(transform.position, GameLogic.Instance.campfires[i].transform.position);
                 if (distance < closestDistance)
                 {
                     closestDistance = distance;
-                    closestTarget = GameLogic.Instance.campFires[i].transform;
+                    closestTarget = GameLogic.Instance.campfires[i].transform;
                 }
             }
         }

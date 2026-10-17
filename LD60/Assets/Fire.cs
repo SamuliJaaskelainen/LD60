@@ -44,11 +44,17 @@ public class Fire : MonoBehaviour
 
     public void OnTriggerEnter(Collider c)
     {
-        Debug.Log(c.transform.name);
         Enemy enemy = c.transform.GetComponent<Enemy>();
         if (enemy != null)
         {
             enemy.Die(true);
+            return;
+        }
+
+        Campfire f = c.transform.GetComponent<Campfire>();
+        if (f != null)
+        {
+            GameLogic.Instance.SetCampfire(f.index, true);
         }
     }
 }
