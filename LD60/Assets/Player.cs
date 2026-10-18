@@ -123,6 +123,8 @@ public class Player : MonoBehaviour
             { 
                 turboTimer = turboTime;
                 turboTriggerTimer = Time.time + turboTriggerDelay;
+                AudioManager.Instance.PlaySound("Turbo");
+                AudioManager.Instance.SetSilence(0.6f);
             }
         }
 
@@ -222,6 +224,7 @@ public class Player : MonoBehaviour
                 // Shooting
                 if (Time.time > fireTimer)
                 {
+                    AudioManager.Instance.PlaySound("Burn", 0.5f);
                     fireTimer = Time.time + fireRate;
                     StartCoroutine("FireBurst");
                 }

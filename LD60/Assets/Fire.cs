@@ -15,7 +15,11 @@ public class Fire : MonoBehaviour
     {
         currentLifetime = lifetime;
         currentSpeed = speed;
-        inheritedVelocity = Player.Instance.GetVelocity().normalized * Player.Instance.GetCurrentSpeed();
+
+        Vector3 playerVelocity = Player.Instance.GetVelocity().normalized * Player.Instance.GetCurrentSpeed();
+        float velocityMultipier = Vector3.Dot(Player.Instance.transform.forward, Player.Instance.turret.forward);
+        velocityMultipier = Mathf.Abs(velocityMultipier);
+        inheritedVelocity = playerVelocity * velocityMultipier;
         transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, scaleAnim.Evaluate(currentLifetime / lifetime));
     }
 
@@ -55,7 +59,13 @@ public class Fire : MonoBehaviour
         Campfire f = c.transform.GetComponent<Campfire>();
         if (f != null)
         {
-            GameLogic.Instance.SetCampfire(f.index, true);
+            if(!GameLogic.Instance.GetCampfireState(f.index))
+            { 
+                AudioManager.Instance.ForceNextSound();
+                AudioManager.Instance.PlaySound("Lit");
+                AudioManager.Instance.SetSilence(1.7f);
+                GameLogic.Instance.SetCampfire(f.index, true);
+            }
         }
     }
 }

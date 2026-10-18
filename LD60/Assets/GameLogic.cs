@@ -45,6 +45,8 @@ public class GameLogic : MonoBehaviour
             defaultCapacity: 10,
             maxSize: 99
         );
+
+        AudioManager.Instance.SetSilence(2.4f);
     }
 
     void Update()
@@ -53,7 +55,9 @@ public class GameLogic : MonoBehaviour
         {
             enemySpawnTimer = Time.time + enemySpawnRate;
             GameObject enemy = enemyPool.Get();
-            enemy.transform.position = enemySpawners[Random.Range(0, enemySpawners.Count)].position;
+
+            Vector3 randomSpawnCircle = new Vector3(Random.insideUnitCircle.x * 3.0f, 0.0f, Random.insideUnitCircle.x * 3.0f);
+            enemy.transform.position = enemySpawners[Random.Range(0, enemySpawners.Count)].position + randomSpawnCircle;
         }
     }
 
@@ -76,7 +80,7 @@ public class GameLogic : MonoBehaviour
 
     void GameOver()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("End");
     }
 
     public void SetCampfire(int i, bool isOn)

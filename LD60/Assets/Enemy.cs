@@ -44,6 +44,9 @@ public class Enemy : MonoBehaviour
         {
             if(GameLogic.Instance.GetCampfireState(targetFire))
             {
+                AudioManager.Instance.ForceNextSound();
+                AudioManager.Instance.PlaySound("Danger");
+                AudioManager.Instance.SetSilence(2.3f);
                 GameLogic.Instance.SetCampfire(targetFire, false);
                 Die();
             }
@@ -56,6 +59,11 @@ public class Enemy : MonoBehaviour
 
     public void Die(bool playAudio = false)
     {
+        if(playAudio)
+        {
+            AudioManager.Instance.PlayRandomSound("H", 3);
+        }
+
         GameLogic.Instance.enemyPool.Release(gameObject);
     }
 }
