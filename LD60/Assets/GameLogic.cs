@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.SceneManagement;
@@ -46,7 +44,13 @@ public class GameLogic : MonoBehaviour
             maxSize: 99
         );
 
+        
+    }
+
+    void Start()
+    {
         AudioManager.Instance.SetSilence(2.4f);
+        Screenshake.Intensity = 0.05f;
     }
 
     void Update()

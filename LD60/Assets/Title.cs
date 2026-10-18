@@ -8,15 +8,16 @@ public class Title : MonoBehaviour
     public GameObject pressSpace;
 
     float timer;
-
-    void Start()
-    {
-        
-    }
+    float startTimer;
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(startTimer < 2.0f)
+        {
+            startTimer += Time.deltaTime;
+        }
+
+        if(Input.GetKeyDown(KeyCode.Space) && startTimer > 1.0f)
         {
             SceneManager.LoadScene("Main");
         }

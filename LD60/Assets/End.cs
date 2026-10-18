@@ -15,6 +15,7 @@ public class End : MonoBehaviour
     void Start()
     {
         pressSpace.SetActive(false);
+        Screenshake.Intensity = 0.15f;
     }
 
     void Update()
@@ -37,6 +38,7 @@ public class End : MonoBehaviour
             {
                 timer = Time.time + 0.33f;
                 pressSpace.SetActive(!pressSpace.activeSelf);
+                Screenshake.Intensity = 0.03f;
             }
         }
     }

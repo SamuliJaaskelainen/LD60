@@ -1,7 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -13,6 +10,7 @@ public class Player : MonoBehaviour
     public Transform turret;
     public Transform turretTip;
     public Transform body;
+    public Transform[] arrows;
 
     public float acceleration;
     public float drag;
@@ -44,6 +42,7 @@ public class Player : MonoBehaviour
     bool inTurbo;
     float turboTriggerTimer;
     int turboDrops;
+    float[] arrowFlickerTimers = new float[3];
 
     public IObjectPool<GameObject> firePool;
 
@@ -239,6 +238,25 @@ public class Player : MonoBehaviour
         velocity = transform.position - lastPosition;
         lastPosition = transform.position;
         Debug.DrawRay(transform.position, velocity * 100.0f);
+
+        // Arrows
+        for(int i = 0; i < 3; i++)
+        {
+            arrows[i].LookAt(GameLogic.Instance.campfires[i].transform);
+
+            if(!GameLogic.Instance.GetCampfireState(i))
+            { 
+                if(Time.time > arrowFlickerTimers[i])
+                {
+                    arrowFlickerTimers[i] = Time.time + 0.33f;
+                    arrows[i].gameObject.SetActive(!arrows[i].gameObject.activeSelf);
+                }
+            }
+            else if (!arrows[i].gameObject.activeSelf)
+            {
+                arrows[i].gameObject.SetActive(true);
+            }
+        }
     }
 
     public void Fire()
