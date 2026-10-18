@@ -646,7 +646,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 274487306}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -25.8, y: 0, z: 13.37}
+  m_LocalPosition: {x: -20.09, y: 0, z: 9.91}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -776,7 +776,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328844128}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 24.67, y: 0, z: 14.23}
+  m_LocalPosition: {x: 20.08, y: 0, z: 13.86}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1531,7 +1531,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1302485692}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 7.6, y: 0, z: -28.18}
+  m_LocalPosition: {x: 5.7, y: 0, z: -23.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1806,8 +1806,8 @@ MonoBehaviour:
   - {fileID: 1302485693}
   - {fileID: 274487307}
   enemyPrefab: {fileID: 2525872193684393861, guid: a1a9ec974f2f43f469abc4293559c1ef, type: 3}
-  enemySpawnRate: 1
-  progressRate: 0.016
+  enemySpawnRate: 1.1
+  progressRate: 0.0155
   enemies: []
 --- !u!4 &1645779346
 Transform:
@@ -2436,7 +2436,7 @@ MonoBehaviour:
   acceleration: 18
   drag: 9
   maxSpeed: 9
-  maxReverseSpeed: -4.5
+  maxReverseSpeed: -5
   turnSpeed: 200
   moveMaxDistance: 30
   wheelVisualMultiplier: 0.9
@@ -2448,10 +2448,10 @@ MonoBehaviour:
   prefireDistance: 0.5
   maxFireSpread: 0.05
   turboTime: 0.5
-  turboSpeed: 20
+  turboSpeed: 22
   turboFireDropRate: 0.03
   turboTurnMultiplier: 0.3
-  turboTriggerDelay: 3.2
+  turboTriggerDelay: 2
 --- !u!208 &1885784343259011062
 NavMeshObstacle:
   m_ObjectHideFlags: 0
