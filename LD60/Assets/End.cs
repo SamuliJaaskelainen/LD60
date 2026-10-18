@@ -38,7 +38,11 @@ public class End : MonoBehaviour
             {
                 timer = Time.time + 0.33f;
                 pressSpace.SetActive(!pressSpace.activeSelf);
-                Screenshake.Intensity = 0.03f;
+
+                if(pressSpace.activeSelf)
+                { 
+                    Screenshake.Intensity = 0.03f;
+                }
             }
         }
     }

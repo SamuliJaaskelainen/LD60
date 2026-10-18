@@ -11,16 +11,20 @@ public class GameLogic : MonoBehaviour
 
     public GameObject[] uiOn;
     public GameObject[] uiOff;
+    public Transform progressBar;
     public List<GameObject> campfires;
     public List<Transform> enemySpawners;
     public GameObject enemyPrefab;
     public float enemySpawnRate;
+    public float progressRate;
     float enemySpawnTimer;
-
+    float progress;
+    int deadCampfires;
+    float flickerTimer;
     bool[] campfireStates = new bool[3];
 
     public IObjectPool<GameObject> enemyPool;
-    public List<GameObject> enemies = new List<GameObject>();
+    [HideInInspector] public List<GameObject> enemies = new List<GameObject>();
 
     void Awake()
     {
@@ -43,8 +47,6 @@ public class GameLogic : MonoBehaviour
             defaultCapacity: 10,
             maxSize: 99
         );
-
-        
     }
 
     void Start()
@@ -63,11 +65,31 @@ public class GameLogic : MonoBehaviour
             Vector3 randomSpawnCircle = new Vector3(Random.insideUnitCircle.x * 3.0f, 0.0f, Random.insideUnitCircle.x * 3.0f);
             enemy.transform.position = enemySpawners[Random.Range(0, enemySpawners.Count)].position + randomSpawnCircle;
         }
+
+        if(deadCampfires == 0)
+        {
+            progress += Time.deltaTime * progressRate;
+            progressBar.localScale = new Vector3(1.0f, progress, 1.0f);
+            progressBar.gameObject.SetActive(true);
+
+            if (progress >= 1.0f)
+            {
+                WinGame();
+            }
+        }
+        else
+        {
+            if(Time.time > flickerTimer)
+            {
+                flickerTimer = Time.time + 0.33f;
+                progressBar.gameObject.SetActive(!progressBar.gameObject.activeSelf);
+            }
+        }
     }
 
     void UpdateCampfires()
     {
-        int deadCampfires = 0;
+        deadCampfires = 0;
         for (int i = 0; i < campfireStates.Length; i++)
         {
             if (campfireStates[i] == false) deadCampfires++;
@@ -85,6 +107,11 @@ public class GameLogic : MonoBehaviour
     void GameOver()
     {
         SceneManager.LoadScene("End");
+    }
+
+    void WinGame()
+    {
+        SceneManager.LoadScene("Win");
     }
 
     public void SetCampfire(int i, bool isOn)
